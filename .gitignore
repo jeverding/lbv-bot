@@ -68,6 +68,9 @@ instance/
 # Scrapy stuff:
 .scrapy
 
+# Selenium stuff:
+drivers/
+
 # Sphinx documentation
 docs/_build/
 
