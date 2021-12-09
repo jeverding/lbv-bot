@@ -1,4 +1,8 @@
-# Set up
+"""
+Description: Basic, simple selenium-based script for checking and making appointments at LBV (German DMV)
+Authors: Jakob Everding
+Date: 09.12.2021 (first: 08.12.2021)
+"""
 import os
 import time
 from datetime import datetime
