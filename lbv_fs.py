@@ -17,20 +17,20 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-# Import secrets
+# Config and import secrets
 secrets_loc = os.path.join(os.path.abspath(os.getcwd()), "secrets", ".env")
 load_dotenv(dotenv_path=secrets_loc)
-first_name =os.environ.get("first_name")
-last_name =os.environ.get("last_name")
-email =os.environ.get("email")
+first_name = os.environ.get("first_name")
+last_name = os.environ.get("last_name")
+email = os.environ.get("email")
+path_gecko = os.environ.get("path_gecko")
 
 
 # Prepare selenium
-PATH_GECKO = "./drivers/geckodriver.exe"
 options = Options()
 options.set_preference(name="profile", value="./drivers/ffox.default")
 options.headless = False
-service = Service(PATH_GECKO)
+service = Service(path_gecko)
 
 driver = webdriver.Firefox(options=options, service=service)
 driver.get("https://www.lbv-termine.de/frontend/onlinedienstleistung.php?dienstleistungsid=176")
