@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+python-dotenv = "0.18.0"
+selenium = "*"
 
 [dev-packages]
 

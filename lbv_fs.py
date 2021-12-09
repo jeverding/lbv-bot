@@ -4,6 +4,7 @@ Authors: Jakob Everding
 Date: 09.12.2021 (first: 08.12.2021)
 """
 import os
+from dotenv import load_dotenv
 import time
 from datetime import datetime
 from selenium import webdriver
