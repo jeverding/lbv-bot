@@ -17,6 +17,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
+# Import secrets
+secrets_loc = os.path.join(os.path.abspath(os.getcwd()), "secrets", ".env")
+load_dotenv(dotenv_path=secrets_loc)
+first_name =os.environ.get("first_name")
+last_name =os.environ.get("last_name")
+email =os.environ.get("email")
+
+
 # Prepare selenium
 PATH_GECKO = "./drivers/geckodriver.exe"
 options = Options()
@@ -32,13 +40,12 @@ WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, "datenschut
 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "weiterbutton"))).click()
 
 # Site: Personal data
-# TODO (JE): Include personal data
-vorname = driver.find_element(by=By.ID, value="vorname")
-vorname.send_keys(first_name)
-nachname = driver.find_element(by=By.ID, value="nachname")
-nachname.send_keys(last_name)
-email = driver.find_element(by=By.ID, value="email")
-email.send_keys(email)
+fname_box = driver.find_element(by=By.ID, value="vorname")
+fname_box.send_keys(first_name)
+lname_box = driver.find_element(by=By.ID, value="nachname")
+lname_box.send_keys(last_name)
+email_box = driver.find_element(by=By.ID, value="email")
+email_box.send_keys(email)
 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "weiterbutton"))).click()
 
 # Site: Site selection
