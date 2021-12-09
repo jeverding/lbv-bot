@@ -28,8 +28,8 @@ path_gecko = os.environ.get("path_gecko")
 
 # Prepare selenium
 options = Options()
-options.set_preference(name="profile", value="./drivers/ffox.default")
-options.headless = False
+# options.set_preference(name="profile", value="./drivers/ffox.default")
+options.headless = True
 service = Service(path_gecko)
 
 driver = webdriver.Firefox(options=options, service=service)
