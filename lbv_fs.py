@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 import time
 from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
@@ -20,6 +20,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 # Config and import secrets
 secrets_loc = os.path.join(os.path.abspath(os.getcwd()), "secrets", ".env")
 load_dotenv(dotenv_path=secrets_loc)
+system = os.environ.get("system")
 first_name = os.environ.get("first_name")
 last_name = os.environ.get("last_name")
 email = os.environ.get("email")
@@ -28,12 +29,13 @@ path_b_driver = os.environ.get("path_b_driver")
 
 # Prepare selenium
 options = Options()
-# options.set_preference(name="profile", value="./drivers/ffox.default")
-options.headless = True
+if system.lower() == "linux":
+    options.add_argument("no-sandbox")
+options.add_argument("headless")
+options.add_argument("window-size=1500,1200")
 service = Service(path_b_driver)
 
-driver = webdriver.Chrome(executable_path=path_b_driver)
-# driver = webdriver.Firefox(options=options, service=service)
+driver = webdriver.Chrome(options=options, service=service)
 driver.get("https://www.lbv-termine.de/frontend/onlinedienstleistung.php?dienstleistungsid=176")
 
 # Site: Data protection
