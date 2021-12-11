@@ -57,11 +57,12 @@ x.click()
 
 # Site: Date selection
 dates = driver.find_elements(by=By.NAME, value="daten")
-min_date = dates[0].get_attribute("id")
+min_date_str = dates[0].get_attribute("id")
 # Proceed only if earliest available date is before some specified date
-min_date = datetime.strptime(min_date, "%Y-%m-%d")
+min_date = datetime.strptime(min_date_str, "%Y-%m-%d")
 if min_date < datetime(2021, 12, 22):
-    driver.find_element(by=By.ID, value=min_date).click()
+    x = driver.find_element(by=By.ID, value=min_date_str)
+    x.click()
 
     times = driver.find_elements(by=By.NAME, value="zeiten")
     min_time = times[0].get_attribute("id")
