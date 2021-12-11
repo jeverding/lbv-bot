@@ -74,6 +74,9 @@ drivers/
 # Sphinx documentation
 docs/_build/
 
+# Logging
+log/
+
 # PyBuilder
 target/
 
