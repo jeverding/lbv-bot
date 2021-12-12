@@ -58,7 +58,23 @@ def get_proxies() -> list:
 
 
 def driver_proxy(proxy):
-    pass
+    selenium_proxy = Proxy()
+    selenium_proxy.proxy_type = ProxyType.MANUAL
+    selenium_proxy.http_proxy = proxy
+    selenium_proxy.ssl_proxy = proxy
+
+    capabilities = DesiredCapabilities.CHROME
+    selenium_proxy.add_to_capabilities(capabilities)
+
+    options = Options()
+    if system.lower() == "linux":
+        options.add_argument("no-sandbox")
+    options.add_argument("headless")
+    options.add_argument("window-size=1500,1200")
+    service = Service(path_b_driver)
+    driver = webdriver.Chrome(options=options, service=service, desired_capabilities=capabilities)
+
+    return driver
 
 
 def run_selenium():
