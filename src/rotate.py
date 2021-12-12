@@ -25,3 +25,16 @@ first_name = os.environ.get("first_name")
 last_name = os.environ.get("last_name")
 email = os.environ.get("email")
 path_b_driver = str(Path.cwd() / os.environ.get("path_b_driver"))
+
+
+def get_proxies() -> list:
+    pass
+
+
+def driver_proxy(proxy):
+    pass
+
+
+def run_selenium():
+    # Get https proxies, rotate, and add to webdriver config
+    pass
