@@ -82,7 +82,7 @@ def run_selenium():
     proxy_pool = []
     proxy_iter = cycle(proxy_pool)
     n_proxy = 0
-    while n_proxy <= len(proxy_pool):
+    while True:
         try:
             if n_proxy == len(proxy_pool):
                 print("Getting new proxy pool")
@@ -96,7 +96,7 @@ def run_selenium():
             driver.quit()
         except Exception as e:
             print(e)
-            print(f"Trying with other proxy from same proxy pool; n_proxy: {n_proxy}")
+            print(f"Trying with other proxy; n_proxy: {n_proxy}")
             n_proxy += 1
             continue
         break
