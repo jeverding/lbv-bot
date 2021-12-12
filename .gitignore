@@ -69,13 +69,16 @@ instance/
 .scrapy
 
 # Selenium stuff:
-drivers/
+drivers/*
 
 # Sphinx documentation
-docs/_build/
+docs/_build/*
 
 # Logging
-log/
+log/*
+
+# Secrets
+secrets/*
 
 # PyBuilder
 target/
@@ -108,8 +111,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
-.venv
+**/.env
+**/.venv
 env/
 venv/
 ENV/
