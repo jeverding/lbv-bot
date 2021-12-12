@@ -38,3 +38,11 @@ def driver_proxy(proxy):
 def run_selenium():
     # Get https proxies, rotate, and add to webdriver config
     pass
+
+
+def main():
+    pass
+
+
+if __name__ == "__main__":
+    main()
