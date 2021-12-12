@@ -28,7 +28,33 @@ path_b_driver = str(Path.cwd() / os.environ.get("path_b_driver"))
 
 
 def get_proxies() -> list:
-    pass
+    selenium_proxy = Proxy()
+    selenium_proxy.proxy_type = ProxyType.SYSTEM
+    capabilities = DesiredCapabilities.CHROME
+    selenium_proxy.add_to_capabilities(capabilities)
+
+    options = Options()
+    if system.lower() == "linux":
+        options.add_argument("no-sandbox")
+    options.add_argument("headless")
+    options.add_argument("window-size=1500,1200")
+    service = Service(path_b_driver)
+    driver = webdriver.Chrome(options=options, service=service, desired_capabilities=capabilities)
+    driver.get("https://free-proxy-list.net/")
+    # TODO (JE): Update this part - working atm, but inefficient
+    free_proxies = driver.find_elements(by=By.CSS_SELECTOR, value="td")
+
+    proxy_pool = []
+    rows = int(len(free_proxies) / 8)
+    for i in range(rows):
+        ip = free_proxies[i * 8].text
+        port = free_proxies[i * 8 + 1].text
+        https = free_proxies[i * 8 + 6].text
+        if https == "yes":
+            proxy_pool.append(f"{ip}:{port}")
+
+    driver.quit()
+    return proxy_pool
 
 
 def driver_proxy(proxy):
