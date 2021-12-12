@@ -79,11 +79,31 @@ def driver_proxy(proxy):
 
 def run_selenium():
     # Get https proxies, rotate, and add to webdriver config
-    pass
+    proxy_pool = []
+    proxy_iter = cycle(proxy_pool)
+    n_proxy = 0
+    while n_proxy <= len(proxy_pool):
+        try:
+            if n_proxy == len(proxy_pool):
+                print("Getting new proxy pool")
+                proxy_pool = get_proxies()
+                proxy_iter = cycle(proxy_pool)
+                n_proxy = 0
+            print(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
+            proxy = next(proxy_iter)
+            driver = driver_proxy(proxy=proxy)
+            # TODO (JE): Include code/script to execute scraping here
+            driver.quit()
+        except Exception as e:
+            print(e)
+            print(f"Trying with other proxy from same proxy pool; n_proxy: {n_proxy}")
+            n_proxy += 1
+            continue
+        break
 
 
 def main():
-    pass
+    run_selenium()
 
 
 if __name__ == "__main__":
