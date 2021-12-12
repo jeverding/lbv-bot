@@ -84,7 +84,8 @@ def run_selenium():
     n_proxy = 0
     while True:
         try:
-            if n_proxy == len(proxy_pool):
+            # TODO (JE): Check if transforming if e.g. to while loop makes sense
+            if n_proxy >= len(proxy_pool):
                 print("Getting new proxy pool")
                 proxy_pool = get_proxies()
                 proxy_iter = cycle(proxy_pool)
