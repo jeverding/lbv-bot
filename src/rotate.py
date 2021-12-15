@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from itertools import cycle
+import functools
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -80,6 +81,7 @@ def rotate_proxies(func):
         func: Function to be decorated, takes argument driver from decorator by default
     Returns: None (other than wrapped function object)
     """
+    @functools.wraps(func)
     def wrapper_rotate_proxies(*args, **kwargs):
         # Get https proxies, rotate, and add to webdriver config
         proxy_pool = []
