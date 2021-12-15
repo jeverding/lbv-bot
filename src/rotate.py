@@ -79,11 +79,12 @@ def rotate_proxies(func):
         proxy as long as the wrapped function passes.
     Args:
         func: Function to be decorated, takes argument driver from decorator by default
-    Returns: None (other than wrapped function object)
+    Returns: Object returned by func, if exists
     """
     @functools.wraps(func)
     def wrapper_rotate_proxies(*args, **kwargs):
         # Get https proxies, rotate, and add to webdriver config
+        func_value = None
         proxy_pool = []
         proxy_iter = cycle(proxy_pool)
         n_proxy = 0
@@ -99,7 +100,7 @@ def rotate_proxies(func):
                 proxy = next(proxy_iter)
                 driver = driver_proxy(proxy=proxy)
 
-                func(driver, *args, **kwargs)
+                func_value = func(driver, *args, **kwargs)
 
                 if driver:
                     driver.quit()
@@ -109,4 +110,6 @@ def rotate_proxies(func):
                 n_proxy += 1
                 continue
             break
+        if func_value:
+            return func_value
     return wrapper_rotate_proxies
