@@ -1,23 +1,16 @@
 """
 Description: Basic, simple selenium-based script for checking and making appointments at LBV (German DMV)
 Authors: Jakob Everding
-Date: 12.12.2021 (first: 08.12.2021)
+Date: 15.12.2021 (first: 08.12.2021)
 """
 import os
 from dotenv import load_dotenv
-import time
-from pathlib import Path
 from datetime import datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from src.rotate import run_selenium
+from src.rotate import rotate_proxies
 
 # Config and import secrets
 secrets_loc = os.path.join(os.path.abspath(os.getcwd()), "secrets", ".env")
@@ -27,7 +20,8 @@ last_name = os.environ.get("last_name")
 email = os.environ.get("email")
 
 
-def inner_execute(driver):
+@rotate_proxies
+def book_fs(driver):
     driver.get("https://www.lbv-termine.de/frontend/onlinedienstleistung.php?dienstleistungsid=176")
 
     # Site: Data protection
@@ -66,7 +60,7 @@ def inner_execute(driver):
 
 
 def main():
-    run_selenium(func=inner_execute)
+    book_fs()
 
 
 if __name__ == "__main__":
