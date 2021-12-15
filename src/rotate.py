@@ -1,7 +1,7 @@
 """
 Description: This scripts automates the Selenium webdriver configuration with rotating proxies
 Authors: Jakob Everding
-Date: 12.12.2021 (first: 11.12.2021)
+Date: 15.12.2021 (first: 11.12.2021)
 """
 import os
 from dotenv import load_dotenv
@@ -13,8 +13,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 # Config and import secrets
 secrets_loc = str(Path.cwd() / "secrets" / ".env")
@@ -73,30 +71,40 @@ def driver_proxy(proxy):
     return driver
 
 
-def run_selenium(func):
-    # Get https proxies, rotate, and add to webdriver config
-    proxy_pool = []
-    proxy_iter = cycle(proxy_pool)
-    n_proxy = 0
-    while True:
-        try:
-            # TODO (JE): Check if transforming if e.g. to while loop makes sense
-            if n_proxy >= len(proxy_pool):
-                print("Getting new proxy pool")
-                proxy_pool = get_proxies()
-                proxy_iter = cycle(proxy_pool)
-                n_proxy = 0
-            print(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
-            proxy = next(proxy_iter)
-            driver = driver_proxy(proxy=proxy)
+def rotate_proxies(func):
+    """
+    Decorator configuring webdriver with rotating proxies for wrapped function, func.
+        In specific, if the wrapped function fails, the decorator automatically retires execution with a different
+        proxy as long as the wrapped function passes.
+    Args:
+        func: Function to be decorated, takes argument driver from decorator by default
+    Returns: None (other than wrapped function object)
+    """
+    def wrapper_rotate_proxies(*args, **kwargs):
+        # Get https proxies, rotate, and add to webdriver config
+        proxy_pool = []
+        proxy_iter = cycle(proxy_pool)
+        n_proxy = 0
+        while True:
+            try:
+                # TODO (JE): Check if transforming if e.g. to while loop makes sense
+                if n_proxy >= len(proxy_pool):
+                    print("Getting new proxy pool")
+                    proxy_pool = get_proxies()
+                    proxy_iter = cycle(proxy_pool)
+                    n_proxy = 0
+                print(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
+                proxy = next(proxy_iter)
+                driver = driver_proxy(proxy=proxy)
 
-            func(driver)
+                func(driver, *args, **kwargs)
 
-            if driver:
-                driver.quit()
-        except Exception as e:
-            print(e)
-            print(f"Trying with other proxy; n_proxy: {n_proxy}")
-            n_proxy += 1
-            continue
-        break
+                if driver:
+                    driver.quit()
+            except Exception as e:
+                print(e)
+                print(f"Trying with other proxy; n_proxy: {n_proxy}")
+                n_proxy += 1
+                continue
+            break
+    return wrapper_rotate_proxies
