@@ -1,7 +1,7 @@
 """
 Description: Basic, simple selenium-based script for checking and making appointments at LBV (German DMV)
 Authors: Jakob Everding
-Date: 15.12.2021 (first: 08.12.2021)
+Date: 19.12.2021 (first: 08.12.2021)
 """
 import os
 from dotenv import load_dotenv
@@ -9,6 +9,7 @@ from datetime import datetime
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+import logging
 
 from src.rotate import rotate_proxies
 
@@ -18,6 +19,8 @@ load_dotenv(dotenv_path=secrets_loc)
 first_name = os.environ.get("first_name")
 last_name = os.environ.get("last_name")
 email = os.environ.get("email")
+
+logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 
 
 @rotate_proxies
