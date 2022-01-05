@@ -60,6 +60,7 @@ def get_proxies() -> list:
 
 
 def driver_proxy(proxy):
+    logging.info(f"Preparing webdriver with manual proxy: {str(proxy)}")
     selenium_proxy = Proxy()
     selenium_proxy.proxy_type = ProxyType.MANUAL
     selenium_proxy.http_proxy = proxy
@@ -70,6 +71,7 @@ def driver_proxy(proxy):
 
     options = Options()
     if system.lower() == "linux":
+        logging.info("Adding webdriver configuration for linux")
         options.add_argument("no-sandbox")
     options.add_argument("headless")
     options.add_argument("window-size=1500,1200")
@@ -99,11 +101,11 @@ def rotate_proxies(func):
             try:
                 # TODO (JE): Check if transforming if e.g. to while loop makes sense
                 if n_proxy >= len(proxy_pool):
-                    print("Getting new proxy pool")
+                    logging.info("Getting new proxy pool")
                     proxy_pool = get_proxies()
                     proxy_iter = cycle(proxy_pool)
                     n_proxy = 0
-                print(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
+                logging.info(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
                 proxy = next(proxy_iter)
                 driver = driver_proxy(proxy=proxy)
 
@@ -112,8 +114,8 @@ def rotate_proxies(func):
                 if driver:
                     driver.quit()
             except Exception as e:
-                print(e)
-                print(f"Trying with other proxy; n_proxy: {n_proxy}")
+                logging.warning(e, exc_info=True)
+                logging.info(f"Trying with other proxy; n_proxy: {n_proxy}")
                 n_proxy += 1
                 continue
             break
