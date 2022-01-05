@@ -21,8 +21,10 @@ secrets_loc = str(Path.cwd() / "secrets" / ".env")
 load_dotenv(dotenv_path=secrets_loc)
 system = os.environ.get("system")
 path_b_driver = str(Path.cwd() / os.environ.get("path_b_driver"))
+path_log = str(Path.cwd() / "log")
 
-logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
+logging.basicConfig(filename=str(Path(path_log) / "lbv_log.log"), filemode="a",
+                    format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 
 
 def get_proxies() -> list:
