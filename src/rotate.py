@@ -1,7 +1,7 @@
 """
 Description: This scripts automates the Selenium webdriver configuration with rotating proxies
 Authors: Jakob Everding
-Date: 15.12.2021 (first: 11.12.2021)
+Date:05.01.2022 (first: 11.12.2021)
 """
 import os
 from dotenv import load_dotenv
@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+import logging
 
 # Config and import secrets
 secrets_loc = str(Path.cwd() / "secrets" / ".env")
@@ -21,8 +22,11 @@ load_dotenv(dotenv_path=secrets_loc)
 system = os.environ.get("system")
 path_b_driver = str(Path.cwd() / os.environ.get("path_b_driver"))
 
+logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
+
 
 def get_proxies() -> list:
+    logging.info("Starting getting https proxies:")
     selenium_proxy = Proxy()
     selenium_proxy.proxy_type = ProxyType.SYSTEM
     capabilities = DesiredCapabilities.CHROME
@@ -30,13 +34,15 @@ def get_proxies() -> list:
 
     options = Options()
     if system.lower() == "linux":
+        logging.info("Adding webdriver configuration for linux")
         options.add_argument("no-sandbox")
     options.add_argument("headless")
     options.add_argument("window-size=1500,1200")
     service = Service(path_b_driver)
+    logging.info("Starting webdriver")
     driver = webdriver.Chrome(options=options, service=service, desired_capabilities=capabilities)
     driver.get("https://free-proxy-list.net/")
-    # TODO (JE): Update this part - working atm, but inefficient
+    # TODO (JE): Update this part - working atm, but potentially inefficient
     free_proxies = driver.find_elements(by=By.CSS_SELECTOR, value="td")
 
     proxy_pool = []
@@ -49,6 +55,7 @@ def get_proxies() -> list:
             proxy_pool.append(f"{ip}:{port}")
 
     driver.quit()
+    logging.info(f"Generated list with {len(proxy_pool)} https proxies")
     return proxy_pool
 
 
