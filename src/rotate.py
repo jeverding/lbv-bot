@@ -1,7 +1,7 @@
 """
 Description: This scripts automates the Selenium webdriver configuration with rotating proxies
 Authors: Jakob Everding
-Date: 15.12.2021 (first: 11.12.2021)
+Date:05.01.2022 (first: 11.12.2021)
 """
 import os
 from dotenv import load_dotenv
@@ -14,15 +14,21 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+import logging
 
 # Config and import secrets
 secrets_loc = str(Path.cwd() / "secrets" / ".env")
 load_dotenv(dotenv_path=secrets_loc)
 system = os.environ.get("system")
 path_b_driver = str(Path.cwd() / os.environ.get("path_b_driver"))
+path_log = str(Path.cwd() / "log")
+
+logging.basicConfig(filename=str(Path(path_log) / "lbv_log.log"), filemode="a",
+                    format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 
 
 def get_proxies() -> list:
+    logging.info("Starting getting https proxies:")
     selenium_proxy = Proxy()
     selenium_proxy.proxy_type = ProxyType.SYSTEM
     capabilities = DesiredCapabilities.CHROME
@@ -30,13 +36,15 @@ def get_proxies() -> list:
 
     options = Options()
     if system.lower() == "linux":
+        logging.info("Adding webdriver configuration for linux")
         options.add_argument("no-sandbox")
     options.add_argument("headless")
     options.add_argument("window-size=1500,1200")
     service = Service(path_b_driver)
+    logging.info("Starting webdriver")
     driver = webdriver.Chrome(options=options, service=service, desired_capabilities=capabilities)
     driver.get("https://free-proxy-list.net/")
-    # TODO (JE): Update this part - working atm, but inefficient
+    # TODO (JE): Update this part - working atm, but potentially inefficient
     free_proxies = driver.find_elements(by=By.CSS_SELECTOR, value="td")
 
     proxy_pool = []
@@ -49,10 +57,12 @@ def get_proxies() -> list:
             proxy_pool.append(f"{ip}:{port}")
 
     driver.quit()
+    logging.info(f"Generated list with {len(proxy_pool)} https proxies")
     return proxy_pool
 
 
 def driver_proxy(proxy):
+    logging.info(f"Preparing webdriver with manual proxy: {str(proxy)}")
     selenium_proxy = Proxy()
     selenium_proxy.proxy_type = ProxyType.MANUAL
     selenium_proxy.http_proxy = proxy
@@ -63,6 +73,7 @@ def driver_proxy(proxy):
 
     options = Options()
     if system.lower() == "linux":
+        logging.info("Adding webdriver configuration for linux")
         options.add_argument("no-sandbox")
     options.add_argument("headless")
     options.add_argument("window-size=1500,1200")
@@ -92,11 +103,11 @@ def rotate_proxies(func):
             try:
                 # TODO (JE): Check if transforming if e.g. to while loop makes sense
                 if n_proxy >= len(proxy_pool):
-                    print("Getting new proxy pool")
+                    logging.info("Getting new proxy pool")
                     proxy_pool = get_proxies()
                     proxy_iter = cycle(proxy_pool)
                     n_proxy = 0
-                print(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
+                logging.info(f"Proxy position in current pool, n_proxy: {n_proxy}; pool size: {len(proxy_pool)}")
                 proxy = next(proxy_iter)
                 driver = driver_proxy(proxy=proxy)
 
@@ -105,8 +116,8 @@ def rotate_proxies(func):
                 if driver:
                     driver.quit()
             except Exception as e:
-                print(e)
-                print(f"Trying with other proxy; n_proxy: {n_proxy}")
+                logging.warning(e, exc_info=True)
+                logging.info(f"Trying with other proxy; n_proxy: {n_proxy}")
                 n_proxy += 1
                 continue
             break
